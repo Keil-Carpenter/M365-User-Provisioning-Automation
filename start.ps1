@@ -11,8 +11,8 @@
 #>
 
 function Run {
-    # Install-Module Microsoft.Graph -RequiredVersion 2.32.0 -Force
-    # Import-Module Microsoft.Graph
+    Install-Module Microsoft.Graph -RequiredVersion 2.32.0 -Force
+    Import-Module Microsoft.Graph
     
     Connect-MgGraph -Scopes "Group.ReadWrite.All", "User.ReadWrite.All", "Directory.Read.All"
 
@@ -60,7 +60,7 @@ function Run {
         $userInput = Read-Host "Enter user's UPN"
 
         $result = Test-EntraIDUserExists -UserPrincipalName $userInput -ValidateFormat
-
+        Clear-Host
         # If the user does not exist then prompt for re-try
         if (-not $result.Exists) {
             Write-Host "$($result.Error). Try again..." -ForegroundColor Yellow
