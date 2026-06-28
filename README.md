@@ -3,7 +3,6 @@
 
 Interactive PowerShell tool for Microsoft 365 user provisioning using Microsoft Graph and Exchange Online PowerShell in a managed services environment.
 
----
 
 ## Overview
 
@@ -17,7 +16,6 @@ The script performs the following onboarding tasks:
 - Applies Microsoft 365 licensing (E5 via group-based licensing, then Viva Insights)
 - Configures mailbox trusted senders (optional)
 
----
 
 ## How it works
 
@@ -51,7 +49,6 @@ The script applies:
 - Licensing configuration
 - Mailbox trusted sender configuration (if configuration file exists)
 
----
 
 ## Screenshots
 
@@ -83,7 +80,21 @@ The script applies:
 - Group.ReadWrite.All
 - Directory.Read.All
 
----
+## Usage
+
+```powershell
+# Install Microsoft Graph module (if not already installed)
+Install-Module Microsoft.Graph -Scope CurrentUser
+
+# Connect to Microsoft Graph
+Connect-MgGraph -Scopes "User.Read.All"
+
+# Navigate to source directory
+Set-Location ./src
+
+# Run provisioning script
+.\Begin-Provisioning.ps1
+```
 
 ## Optional Configuration
 
@@ -94,8 +105,6 @@ C:\temp\trusted_senders.txt
 ```
 
 Each entry is added to the mailbox Trusted Senders and Domains list.
-
----
 
 ## Notes
 
