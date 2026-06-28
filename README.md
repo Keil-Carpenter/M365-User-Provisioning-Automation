@@ -1,5 +1,5 @@
 
-# Microsoft 365 User Onboarding Automation
+# Microsoft 365 User Provisioning Automation
 
 Interactive PowerShell tool for Microsoft 365 user provisioning using Microsoft Graph and Exchange Online PowerShell in a managed services environment.
 
