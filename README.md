@@ -10,11 +10,21 @@ The script performs the following onboarding tasks:
 
 - Validates user exists in Microsoft Entra ID
 - Collects user input (UPN, reporting structure, location)
-- Assigns security group membership (Microsoft Entra ID)
-- Assigns distribution group membership (Exchange Online)
+- Assigns security group membership in Microsoft Entra ID
+- Assigns distribution group membership in Exchange Online
 - Sets Microsoft Entra usage location
 - Applies Microsoft 365 licensing (E5 via group-based licensing, then Viva Insights)
 - Configures mailbox trusted senders (optional)
+
+## Key Features
+
+- Fully interactive onboarding workflow
+- Microsoft Graph-based identity management
+- Exchange Online distribution group automation
+- Conditional licensing logic (E5 + Viva Insights)
+- Input validation and retry handling
+- Optional mailbox configuration via external file
+- Idempotent design (safe to re-run per user)
 
 
 ## How it works
@@ -100,9 +110,9 @@ C:\temp\trusted_senders.txt
 Each entry is added to the mailbox Trusted Senders and Domains list.
 
 ## Notes
-- The script automatically installs required modules and connects to Microsoft Graph if not already authenticated.
-- Designed for interactive, per-user provisioning
-- Requires Microsoft Graph and Exchange Online connectivity
+- Automatically installs and imports required modules if missing
+- Authenticates to Microsoft Graph on execution
+- Designed for interactive per-user provisioning (not batch automation)
 - Uses group-based licensing for Microsoft 365 license assignment
 
 
