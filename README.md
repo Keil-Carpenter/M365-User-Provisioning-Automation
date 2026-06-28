@@ -67,7 +67,6 @@ The script applies:
 ### Step 5 – Completion
 <img width="1480" height="662" alt="STEP 5 - Final Step" src="https://github.com/user-attachments/assets/6a136b81-490d-4b40-b878-e78bc26d8f0a" />
 
----
 
 ## Requirements
 

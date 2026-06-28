@@ -1,4 +1,4 @@
-This document describes the internal design and execution flow of the Microsoft 365 User Onboarding Automation script
+This document describes the internal design and execution flow of the Microsoft 365 User Onboarding Automation script.
 
 # Architecture – Microsoft 365 User Onboarding Automation
 
@@ -83,12 +83,14 @@ User input determines distribution group assignment:
 
 
 ### Optional Configuration
-If the file exists:
+
+During execution, the script checks for the following configuration file:
+
 ```text
 C:\temp\trusted_senders.txt
 ```
 
-Each entry is applied to the mailbox Trusted Senders and Domains list via Exchange Online PowerShell.
+If the file is present, each entry is applied to the target mailbox's **Trusted Senders and Domains** list using Exchange Online PowerShell.
 
 
 ## Error Handling and Resilience
