@@ -83,12 +83,6 @@ The script applies:
 ## Usage
 
 ```powershell
-# Install Microsoft Graph module (if not already installed)
-Install-Module Microsoft.Graph -Scope CurrentUser
-
-# Connect to Microsoft Graph
-Connect-MgGraph -Scopes "User.Read.All"
-
 # Navigate to source directory
 Set-Location ./src
 
