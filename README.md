@@ -100,7 +100,7 @@ C:\temp\trusted_senders.txt
 Each entry is added to the mailbox Trusted Senders and Domains list.
 
 ## Notes
-
+- The script automatically installs required modules and connects to Microsoft Graph if not already authenticated.
 - Designed for interactive, per-user provisioning
 - Requires Microsoft Graph and Exchange Online connectivity
 - Uses group-based licensing for Microsoft 365 license assignment
