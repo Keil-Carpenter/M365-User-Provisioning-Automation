@@ -1,3 +1,5 @@
+This document describes the internal design and execution flow of the Microsoft 365 User Onboarding Automation script
+
 # Architecture – Microsoft 365 User Onboarding Automation
 
 ## Overview
@@ -8,7 +10,6 @@ It integrates Microsoft Graph and Exchange Online PowerShell to apply identity c
 
 The process is sequential and dependency-driven to ensure identity, licensing, and messaging configuration are applied in the correct order.
 
----
 
 ## Core Components
 
@@ -18,7 +19,6 @@ The process is sequential and dependency-driven to ensure identity, licensing, a
 - Confirms user exists in Microsoft Entra ID using `Get-MgUser`
 - Re-prompts until a valid user is found
 
----
 
 ### 2. Microsoft Graph Integration Layer
 Used for:
@@ -29,14 +29,12 @@ Used for:
 - License state retrieval (`Get-MgUserLicenseDetail`)
 - License assignment (`Set-MgUserLicense`)
 
----
 
 ### 3. Exchange Online Integration Layer
 Used for:
 - Distribution group membership (`Add-DistributionGroupMember`)
 - Mailbox junk email configuration (Trusted Senders list)
 
----
 
 ## Execution Flow
 
@@ -57,7 +55,6 @@ The script follows a fixed sequential workflow:
 13. Apply trusted senders configuration if file exists
 14. Disconnect and complete execution
 
----
 
 ## Decision Logic
 
@@ -70,7 +67,6 @@ User input determines security group assignment:
 
 Groups are resolved dynamically using `Get-MgGroup`.
 
----
 
 ### Location Mapping
 User input determines distribution group assignment:
@@ -79,14 +75,12 @@ User input determines distribution group assignment:
 - Auckland → DL Te Whare Rama
 - Christchurch → DL CHC Users
 
----
 
 ### Licensing Logic
 - Script waits for E5 license assignment via group-based licensing
 - Polling loop checks license state every 15 seconds (max 10 attempts)
 - If E5 is present, Viva Insights license is applied (if missing)
 
----
 
 ### Optional Configuration
 If the file exists:
@@ -96,7 +90,6 @@ C:\temp\trusted_senders.txt
 
 Each entry is applied to the mailbox Trusted Senders and Domains list via Exchange Online PowerShell.
 
----
 
 ## Error Handling and Resilience
 
@@ -105,7 +98,6 @@ Each entry is applied to the mailbox Trusted Senders and Domains list via Exchan
 - License polling includes timeout and fallback messaging
 - Exchange group assignment handles duplicate membership scenarios
 
----
 
 ## Dependencies
 - Microsoft Graph PowerShell SDK
@@ -116,7 +108,6 @@ Each entry is applied to the mailbox Trusted Senders and Domains list via Exchan
 - Group.ReadWrite.All
 - Directory.Read.All
 
----
 
 ## Design Characteristics
 
