@@ -59,7 +59,7 @@ Exchange Online permissions must allow execution of:
 Run the script:
 
 ```powershell
-.\Script.ps1
+.\Begin-Provisioning.ps1
 ```
 
 The script prompts for:
