@@ -1,5 +1,14 @@
 # Technical Overview
 
+## Contents
+
+- [Script Logic Breakdown](#script-logic-breakdown)
+- [Key Sections](#key-sections)
+- [Modules Used](#modules-used)
+- [Data Handling](#data-handling)
+- [Error Handling](#error-handling)
+- [Execution Notes](#execution-notes)
+
 ## Script Logic Breakdown
 
 1. Install Microsoft.Graph version 2.32.0.
