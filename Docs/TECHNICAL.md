@@ -3,7 +3,7 @@
 ## Contents
 
 - [Script Logic Breakdown](#script-logic-breakdown)
-- [Key Sections](#key-sections)
+- [Key Sections and Functions](#key-sections-and-functions)
 - [Modules Used](#modules-used)
 - [Data Handling](#data-handling)
 - [Error Handling](#error-handling)
@@ -32,7 +32,7 @@
 19. Apply trusted senders to the mailbox.
 20. Display completion status.
 
-## Key Sections / Functions
+## Key Sections and Functions
 
 ### Run
 
