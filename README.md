@@ -1,120 +1,89 @@
-
-# Microsoft 365 User Provisioning Automation
-
-Interactive PowerShell tool for Microsoft 365 user provisioning using Microsoft Graph and Exchange Online PowerShell in a managed services environment.
-
+# User Provisioning and Group Membership Script
 
 ## Overview
 
-The script performs the following onboarding tasks:
+This PowerShell script installs and imports the Microsoft Graph PowerShell module, authenticates to Microsoft Graph, validates a user by User Principal Name (UPN), and performs a series of Microsoft Graph and Exchange Online administrative tasks.
 
-- Validates user exists in Microsoft Entra ID
-- Collects user input (UPN, reporting structure, location)
-- Assigns security group membership in Microsoft Entra ID
-- Assigns distribution group membership in Exchange Online
-- Sets Microsoft Entra usage location
-- Applies Microsoft 365 licensing (E5 via group-based licensing, then Viva Insights)
-- Configures mailbox trusted senders (optional)
+The script prompts for user input to determine additional group memberships and distribution list memberships before applying the required changes.
 
-## Key Features
+## Features
 
-- Fully interactive onboarding workflow
-- Microsoft Graph-based identity management
-- Exchange Online distribution group automation
-- Conditional licensing logic (E5 + Viva Insights)
-- Input validation and retry handling
-- Optional mailbox configuration via external file
-- Idempotent design (safe to re-run per user)
-
-
-## How it works
-
-### Step 1 – Enter User Principal Name (UPN)
-The script prompts for a UPN and validates it exists in Microsoft Entra ID.
-
-### Step 2 – Select Reporting Structure
-Choose whether the user:
-- Reports to CEO
-- Has direct reports
-- Has no direct reports
-
-This determines security group assignment.
-
-### Step 3 – Select Location
-Choose user location:
-- Wellington
-- Auckland
-- Christchurch
-
-This determines distribution group assignment.
-
-### Step 4 – License Validation
-The script checks for E5 license assignment via group-based licensing before applying Viva Insights.
-
-### Step 5 – Provisioning Execution
-The script applies:
-- Security group membership
-- Distribution group membership
-- Usage location (NZ)
-- Licensing configuration
-- Mailbox trusted sender configuration (if configuration file exists)
-
-
-## Screenshots
-
-### Step 1 – Enter UPN
-<img width="1481" height="662" alt="STEP 1 - Enter UPN" src="https://github.com/user-attachments/assets/bd269fbf-36a3-4ab7-849d-9d63af2829d6" />
-
-### Step 2 – Reporting Structure
-<img width="1482" height="666" alt="STEP 2 - Choose direct reports" src="https://github.com/user-attachments/assets/f5d6f260-4dc1-4d49-b7f7-3c8b3c8b80fc" />
-
-### Step 3 – Location Selection
-<img width="1486" height="663" alt="STEP 3 - Choose location" src="https://github.com/user-attachments/assets/69838a0a-6ac0-4cca-bdd6-4dac7d88a602" />
-
-### Step 4 – License Check
-<img width="1481" height="667" alt="STEP 4 - Verify License Assignment" src="https://github.com/user-attachments/assets/fec17b52-1a70-4a14-a3d8-35a169dd62e5" />
-
-### Step 5 – Completion
-<img width="1480" height="662" alt="STEP 5 - Final Step" src="https://github.com/user-attachments/assets/6a136b81-490d-4b40-b878-e78bc26d8f0a" />
-
+- Installs Microsoft.Graph version 2.32.0.
+- Imports the Microsoft.Graph module.
+- Authenticates to Microsoft Graph.
+- Prompts for a user's UPN.
+- Validates the UPN format using a regular expression.
+- Checks whether the user exists in Microsoft Graph.
+- Re-prompts until a valid user is found.
+- Adds the user to a predefined list of Microsoft Entra ID groups.
+- Prompts for a DoneSafe group selection and adds the selected group.
+- Prompts for a location and adds the corresponding Exchange Online distribution list.
+- Updates the user's Usage Location to `NZ`.
+- Waits for an E5 licence assignment by checking assigned licence SKUs.
+- Assigns a Microsoft Viva Insights licence if it is not already assigned.
+- Disconnects from Microsoft Graph.
+- Connects to Exchange Online.
+- Adds the user to predefined Exchange Online distribution lists.
+- Imports trusted senders from `C:\temp\trusted_senders.txt` if the file exists.
+- Adds each trusted sender to the user's mailbox junk email configuration.
+- Displays status messages throughout execution.
 
 ## Requirements
 
-- PowerShell 5.1 or later
-- Microsoft Graph PowerShell SDK
-- Exchange Online PowerShell
+### PowerShell
 
-### Required permissions:
-- User.ReadWrite.All
+- PowerShell
+- Microsoft.Graph module version 2.32.0
+- Exchange Online PowerShell module (required for Exchange Online cmdlets used by the script)
+
+### Modules
+
+- Microsoft.Graph
+- Exchange Online PowerShell module
+
+### Permissions
+
+Microsoft Graph scopes requested by the script:
+
 - Group.ReadWrite.All
+- User.ReadWrite.All
 - Directory.Read.All
+
+Exchange Online permissions must allow execution of:
+
+- Add-DistributionGroupMember
+- Set-MailboxJunkEmailConfiguration
 
 ## Usage
 
-```powershell
-# Navigate to source directory
-Set-Location ./src
+Run the script:
 
-# Run provisioning script
-.\Begin-Provisioning.ps1
+```powershell
+.\Script.ps1
 ```
 
-## Optional Configuration
+The script prompts for:
 
-If the following file exists, trusted senders will be applied:
+- User Principal Name (UPN)
+- DoneSafe group selection
+- User location
 
-```text
+## Output
+
+The script writes status information to the console.
+
+No CSV, log, or report files are generated.
+
+If present, the script reads trusted senders from:
+
+```
 C:\temp\trusted_senders.txt
 ```
 
-Each entry is added to the mailbox Trusted Senders and Domains list.
+## Notes / Limitations
 
-## Notes
-- Automatically installs and imports required modules if missing
-- Authenticates to Microsoft Graph on execution
-- Designed for interactive per-user provisioning (not batch automation)
-- Uses group-based licensing for Microsoft 365 license assignment
-
-
-
-
+- Microsoft.Graph version 2.32.0 is installed each time the script runs.
+- User validation continues until an existing user is entered.
+- Group membership is determined by group display name.
+- The script waits for an E5 licence assignment for up to 10 attempts with a 15 second delay between checks.
+- Trusted senders are only processed if `C:\temp\trusted_senders.txt` exists.
