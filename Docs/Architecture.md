@@ -1,119 +1,107 @@
-This document describes the internal design and execution flow of the Microsoft 365 User Onboarding Automation script.
+# Architecture Overview
 
-# Architecture – Microsoft 365 User Onboarding Automation
+## System Components
 
-## Overview
+### Authentication
 
-This script is an interactive PowerShell provisioning tool used to manage Microsoft 365 user onboarding.
+- Microsoft Graph authentication using `Connect-MgGraph`
+- Exchange Online authentication using `Connect-ExchangeOnline`
 
-It integrates Microsoft Graph and Exchange Online PowerShell to apply identity configuration, group membership, and licensing based on operator input.
+### Microsoft Graph
 
-The process is sequential and dependency-driven to ensure identity, licensing, and messaging configuration are applied in the correct order.
+The script uses Microsoft Graph cmdlets to:
 
+- Retrieve users
+- Retrieve groups
+- Add users to groups
+- Update user properties
+- Retrieve licence details
+- Assign licences
 
-## Core Components
+### Exchange Online
 
-### 1. Input and Validation Layer
-- Collects user input (UPN, reporting structure, location)
-- Validates UPN format using regex
-- Confirms user exists in Microsoft Entra ID using `Get-MgUser`
-- Re-prompts until a valid user is found
+The script uses Exchange Online cmdlets to:
 
+- Add distribution group members
+- Update mailbox trusted senders
 
-### 2. Microsoft Graph Integration Layer
-Used for:
-- User lookup (`Get-MgUser`)
-- Group lookup (`Get-MgGroup`)
-- Security group membership assignment (`New-MgGroupMemberByRef`)
-- Updating usage location (`Update-MgUser`)
-- License state retrieval (`Get-MgUserLicenseDetail`)
-- License assignment (`Set-MgUserLicense`)
+### Processing Logic
 
+The script:
 
-### 3. Exchange Online Integration Layer
-Used for:
-- Distribution group membership (`Add-DistributionGroupMember`)
-- Mailbox junk email configuration (Trusted Senders list)
+1. Installs Microsoft.Graph.
+2. Imports Microsoft.Graph.
+3. Connects to Microsoft Graph.
+4. Validates a user.
+5. Prompts for additional group selections.
+6. Adds Microsoft Entra ID group memberships.
+7. Updates Usage Location.
+8. Waits for an E5 licence assignment.
+9. Assigns a Viva Insights licence if required.
+10. Connects to Exchange Online.
+11. Adds Exchange distribution group memberships.
+12. Applies trusted sender entries if available.
+13. Displays completion status.
 
+### Output Handling
 
-## Execution Flow
+Output is written to the console using `Write-Host`.
 
-The script follows a fixed sequential workflow:
+## Data Flow
 
-1. Module install and import (Microsoft Graph)
-2. Connect to Microsoft Graph
-3. Validate user existence (loop until valid UPN provided)
-4. Collect reporting structure input
-5. Collect location input
-6. Build security group and distribution group arrays
-7. Assign security groups via Graph
-8. Set Microsoft Entra usage location (NZ)
-9. Wait for E5 license assignment via group-based licensing
-10. Apply Viva Insights license if not present
-11. Connect to Exchange Online
-12. Assign distribution groups
-13. Apply trusted senders configuration if file exists
-14. Disconnect and complete execution
+1. Install Microsoft.Graph.
+2. Import Microsoft.Graph.
+3. Authenticate to Microsoft Graph.
+4. Prompt for a UPN.
+5. Validate UPN format.
+6. Retrieve the user.
+7. Build lists of Microsoft Entra ID groups and Exchange distribution lists.
+8. Retrieve each group by display name.
+9. Add the user to each Microsoft Entra ID group.
+10. Update the user's Usage Location.
+11. Poll licence assignments until the E5 licence is detected or the retry limit is reached.
+12. Assign the Viva Insights licence if required.
+13. Disconnect from Microsoft Graph.
+14. Connect to Exchange Online.
+15. Add the user to each distribution list.
+16. Read trusted senders from `C:\temp\trusted_senders.txt` if available.
+17. Add each trusted sender to the user's mailbox configuration.
+18. Display completion status.
 
+## Dependencies
 
-## Decision Logic
+Modules explicitly used:
 
-### Reporting Structure Mapping
-User input determines security group assignment:
+- Microsoft.Graph
+- Exchange Online PowerShell module
 
-- CEO reporting → Executive security group
-- Direct reports → People leader group
-- No direct reports → Standard user group
+## Authentication Model
 
-Groups are resolved dynamically using `Get-MgGroup`.
+Microsoft Graph authentication:
 
+- Connect-MgGraph
+- Scopes:
+  - Group.ReadWrite.All
+  - User.ReadWrite.All
+  - Directory.Read.All
 
-### Location Mapping
-User input determines distribution group assignment:
+Exchange Online authentication:
 
-- Wellington → DL WEL Users
-- Auckland → DL Te Whare Rama
-- Christchurch → DL CHC Users
+- Connect-ExchangeOnline
 
+## Security Considerations
 
-### Licensing Logic
-- Script waits for E5 license assignment via group-based licensing
-- Polling loop checks license state every 15 seconds (max 10 attempts)
-- If E5 is present, Viva Insights license is applied (if missing)
+- User input is validated using a regular expression before Microsoft Graph lookup.
+- Microsoft Graph authentication requests delegated permissions using explicit scopes.
+- Trusted senders are read from a local file located at:
 
-
-### Optional Configuration
-
-During execution, the script checks for the following configuration file:
-
-```text
+```
 C:\temp\trusted_senders.txt
 ```
 
-If the file is present, each entry is applied to the target mailbox's **Trusted Senders and Domains** list using Exchange Online PowerShell.
+## Limitations
 
-
-## Error Handling and Resilience
-
-- User validation uses retry loop until valid UPN is provided
-- Group assignment includes try/catch handling for existing memberships
-- License polling includes timeout and fallback messaging
-- Exchange group assignment handles duplicate membership scenarios
-
-
-## Dependencies
-- Microsoft Graph PowerShell SDK
-- Exchange Online PowerShell
-
-### Required Permissions
-- User.ReadWrite.All
-- Group.ReadWrite.All
-- Directory.Read.All
-
-
-## Design Characteristics
-
-- Fully interactive (no batch processing)
-- Sequential execution model with dependency order
-- Relies on group-based licensing already configured in tenant
-- Hybrid identity and messaging configuration support
+- Group lookup is performed using group display name.
+- Distribution lists are identified by name.
+- The script expects `C:\temp\trusted_senders.txt` if trusted senders are to be applied.
+- The E5 licence check stops after 10 attempts.
