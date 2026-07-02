@@ -1,0 +1,94 @@
+# Technical Overview
+
+## Script Logic Breakdown
+
+1. Install Microsoft.Graph version 2.32.0.
+2. Import Microsoft.Graph.
+3. Authenticate to Microsoft Graph.
+4. Define the `Test-EntraIDUserExists` function.
+5. Prompt until a valid User Principal Name is entered.
+6. Store the returned Microsoft Graph user object.
+7. Initialise predefined Microsoft Entra ID groups.
+8. Prompt for DoneSafe group selection.
+9. Prompt for user location.
+10. Add the user to each Microsoft Entra ID group.
+11. Update Usage Location to `NZ`.
+12. Retrieve assigned licences.
+13. Wait for the E5 licence assignment.
+14. Assign the Viva Insights licence if it is not already assigned.
+15. Disconnect Microsoft Graph.
+16. Connect to Exchange Online.
+17. Add the user to Exchange Online distribution groups.
+18. Read trusted senders from a local text file.
+19. Apply trusted senders to the mailbox.
+20. Display completion status.
+
+## Key Sections / Functions
+
+### Run
+
+Primary execution function that performs all processing.
+
+### Test-EntraIDUserExists
+
+Validates:
+
+- UPN format (optional)
+- User existence in Microsoft Graph
+
+Returns a custom object containing:
+
+- UserPrincipalName
+- Exists
+- User
+- Error
+
+## Modules Used
+
+- Microsoft.Graph
+- Exchange Online PowerShell module
+
+## Data Handling
+
+The script:
+
+- Validates UPN format using a regular expression.
+- Retrieves users using `Get-MgUser`.
+- Retrieves groups using `Get-MgGroup`.
+- Builds arrays of Microsoft Entra ID groups.
+- Builds arrays of Exchange distribution lists.
+- Retrieves assigned licence SKUs.
+- Assigns a Microsoft Viva Insights licence when required.
+- Reads trusted sender entries from:
+
+```
+C:\temp\trusted_senders.txt
+```
+
+- Applies each trusted sender individually to the mailbox configuration.
+
+## Error Handling
+
+The script includes `try`/`catch` blocks for:
+
+- User lookup
+- Menu input validation
+- Microsoft Entra ID group membership
+- Usage Location update
+- Exchange distribution group membership
+
+Input validation includes:
+
+- UPN regular expression validation
+- Integer conversion for menu selections
+- Retry loops until valid selections are entered
+
+## Execution Notes
+
+- The script executes by calling `Run`.
+- `Run` is piped to `Out-Null`.
+- Console messages are displayed using `Write-Host`.
+- Microsoft Graph is disconnected before connecting to Exchange Online.
+- Licence assignment is checked every 15 seconds for a maximum of 10 attempts.
+- Trusted senders are only processed if the configured file exists.
+```
