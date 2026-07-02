@@ -1,10 +1,18 @@
-# User Provisioning and Group Membership Script
+# Begin-Provisioning.ps1 - User Provisioning and Group Membership
+
+## Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Usage](#usage)
+- [Example Execution](#example-execution)
+- [Output](#output)
+- [Notes / Limitations](#notes--limitations)
 
 ## Overview
 
-This PowerShell script installs and imports the Microsoft Graph PowerShell module, authenticates to Microsoft Graph, validates a user by User Principal Name (UPN), and performs a series of Microsoft Graph and Exchange Online administrative tasks.
-
-The script prompts for user input to determine additional group memberships and distribution list memberships before applying the required changes.
+This PowerShell script installs and imports the Microsoft Graph PowerShell module, authenticates to Microsoft Graph, validates a user by User Principal Name (UPN), and performs user provisioning tasks using Microsoft Graph and Exchange Online.
 
 ## Features
 
@@ -18,7 +26,7 @@ The script prompts for user input to determine additional group memberships and 
 - Adds the user to a predefined list of Microsoft Entra ID groups.
 - Prompts for a DoneSafe group selection and adds the selected group.
 - Prompts for a location and adds the corresponding Exchange Online distribution list.
-- Updates the user's Usage Location to `NZ`.
+- Updates the user's usage Location to `NZ`.
 - Waits for an E5 licence assignment by checking assigned licence SKUs.
 - Assigns a Microsoft Viva Insights licence if it is not already assigned.
 - Disconnects from Microsoft Graph.
@@ -36,11 +44,6 @@ The script prompts for user input to determine additional group memberships and 
 - Microsoft.Graph module version 2.32.0
 - Exchange Online PowerShell module (required for Exchange Online cmdlets used by the script)
 
-### Modules
-
-- Microsoft.Graph
-- Exchange Online PowerShell module
-
 ### Permissions
 
 Microsoft Graph scopes requested by the script:
@@ -49,8 +52,7 @@ Microsoft Graph scopes requested by the script:
 - User.ReadWrite.All
 - Directory.Read.All
 
-Exchange Online permissions must allow execution of:
-
+Exchange Online permissions must allow:
 - Add-DistributionGroupMember
 - Set-MailboxJunkEmailConfiguration
 
@@ -68,17 +70,39 @@ The script prompts for:
 - DoneSafe group selection
 - User location
 
+## Example Execution
+
+The following screenshots show the interactive prompts and console output during script execution.
+
+### Step 1: Enter User Principal Name
+
+<img width="1481" alt="Enter User Principal Name (UPN)" src="https://github.com/user-attachments/assets/bd269fbf-36a3-4ab7-849d-9d63af2829d6" />
+
+### Step 2: Select Reporting Structure
+
+<img width="1482" alt="Reporting Structure Selection" src="https://github.com/user-attachments/assets/f5d6f260-4dc1-4d49-b7f7-3c8b3c8b80fc" />
+
+### Step 3: Select Location
+
+<img width="1486" alt="Location Selection" src="https://github.com/user-attachments/assets/69838a0a-6ac0-4cca-bdd6-4dac7d88a602" />
+
+### Step 4: Verify Licence Assignment
+
+<img width="1481" alt="Licence Assignment Check" src="https://github.com/user-attachments/assets/fec17b52-1a70-4a14-a3d8-35a169dd62e5" />
+
+### Step 5: Provisioning Complete
+
+<img width="1480" alt="Provisioning Complete" src="https://github.com/user-attachments/assets/6a136b81-490d-4b40-b878-e78bc26d8f0a" />
+
+The prompts shown above represent the interactive stages of the provisioning process before the script completes.
+
 ## Output
 
-The script writes status information to the console.
+The script writes progress and status information to the console.
 
 No CSV, log, or report files are generated.
 
-If present, the script reads trusted senders from:
-
-```
-C:\temp\trusted_senders.txt
-```
+If `C:\temp\trusted_senders.txt` exists, the script imports each entry and adds it to the user's mailbox junk email trusted senders list.
 
 ## Notes / Limitations
 
