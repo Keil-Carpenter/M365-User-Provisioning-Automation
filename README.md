@@ -1,4 +1,4 @@
-# Begin-Provisioning.ps1 - User Provisioning and Group Membership
+# M365-User-Provisioning-Automation
 
 ## Contents
 
