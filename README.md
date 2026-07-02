@@ -1,4 +1,4 @@
-# M365-User-Provisioning-Automation
+# M365 User Provisioning Automation
 
 ## Contents
 
